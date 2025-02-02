@@ -28,9 +28,7 @@ class Pet(models.Model):
             return 'cats'
         elif hasattr(self, 'dog'):
             return 'dogs'
-        elif hasattr(self, 'bird'):
-            return 'birds'
-        return 'unknown'
+        return 'pets'
 
     def __str__(self):
         return f"{self.name} - {self.id}"

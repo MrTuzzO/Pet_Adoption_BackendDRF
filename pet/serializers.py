@@ -5,7 +5,8 @@ from pet.models import Pet
 class PetSerializer(serializers.ModelSerializer):
     pet_type = serializers.SerializerMethodField()
     author_username = serializers.CharField(source='author.username', read_only=True)
-
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     class Meta:
         model = Pet
         fields = '__all__'

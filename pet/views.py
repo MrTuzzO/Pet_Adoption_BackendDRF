@@ -1,3 +1,5 @@
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -9,14 +11,23 @@ from rest_framework.decorators import action
 
 
 class PetPagination(PageNumberPagination):
-    page_size = 18
+    page_size = 6
+
+
+class PetFilter(django_filters.FilterSet):
+    gender = django_filters.CharFilter(field_name='gender', lookup_expr='iexact')
+
+    class Meta:
+        model = Pet
+        fields = ['gender']
 
 
 class PetViewSet(viewsets.ModelViewSet):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     pagination_class = PetPagination
-
+    filter_backends = [DjangoFilterBackend]  # Enable filtering
+    filterset_class = PetFilter  # Use the filter class
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
@@ -36,3 +47,17 @@ class PetViewSet(viewsets.ModelViewSet):
         # If pagination is not configured, return all results
         serializer = self.get_serializer(pets, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def pets_only(self, request):
+        pets = Pet.objects.all()
+        pets_without_exact_type = [pet for pet in pets if pet.get_pet_type() == "pets"]
+
+        page = self.paginate_queryset(pets_without_exact_type)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(pets_without_exact_type, many=True)
+        return Response(serializer.data)
+

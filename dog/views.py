@@ -6,7 +6,7 @@ from accounts.permission import IsAuthorOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Dog
 from .serializers import DogSerializer
-from cat.views import PetPagination, CatFilter
+from cat.views import PetPagination
 
 
 class DogFilter(django_filters.FilterSet):

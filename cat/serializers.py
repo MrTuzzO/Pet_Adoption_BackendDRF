@@ -11,6 +11,7 @@ class ColorSerializer(serializers.ModelSerializer):
 class CatSerializer(serializers.ModelSerializer):
     color_names = serializers.SerializerMethodField()
     author_username = serializers.CharField(source='author.username', read_only=True)
+    pet_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Cat
@@ -18,6 +19,9 @@ class CatSerializer(serializers.ModelSerializer):
 
     def get_color_names(self, obj):
         return [color.name for color in obj.colors.all()]
+
+    def get_pet_type(self, obj):
+        return obj.get_pet_type()
 
     def create(self, validated_data):
         colors_data = validated_data.pop('colors', None)
