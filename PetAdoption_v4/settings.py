@@ -31,8 +31,6 @@ ALLOWED_HOSTS = [
     ".netlify.app",
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',
     'https://mrtuzzo.github.io/',
@@ -51,8 +49,6 @@ CORS_ALLOWED_ORIGINS = [
     'https://mrtuzzo.github.io',
     # 'https://your-netlify-site.netlify.app',
 ]
-
-# Application definition
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -101,8 +97,15 @@ ROOT_URLCONF = 'PetAdoption_v4.urls'
 
 SITE_ID = 1
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.CustomUserSerializer',
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 TEMPLATES = [
@@ -124,7 +127,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'PetAdoption_v4.wsgi.app'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -145,7 +147,6 @@ DATABASES = {
         'PORT': '6543'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -182,6 +183,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
