@@ -10,4 +10,4 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Report
         fields = ['id', 'reporter', 'reporter_username', 'post', 'post_title', 'reason', 'description', 'created_at',
                   'status', 'admin_feedback']
-        read_only_fields = ['status', 'admin_feedback']
+        read_only_fields = ['status', 'admin_feedback', 'reporter']
