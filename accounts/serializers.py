@@ -14,5 +14,5 @@ class CustomRegisterSerializer(RegisterSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'birthday', 'address', 'mobile', 'date_joined']
+        fields = ['id', 'username', 'user_img', 'first_name', 'last_name', 'email', 'birthday', 'address', 'mobile', 'date_joined']
         read_only_fields = ['id', 'username', 'email']  # These fields cannot be updated
