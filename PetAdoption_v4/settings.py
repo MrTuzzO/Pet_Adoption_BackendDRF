@@ -43,11 +43,15 @@ CORS_ORIGIN_WHITELIST = (
     'https://pawgle.netlify.app/',
 )
 
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+]
+
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
     "http://localhost:5500",
     'https://mrtuzzo.github.io',
-    'https://pawgle.netlify.app/',
 ]
 
 INSTALLED_APPS = [
@@ -109,7 +113,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',  # If using token-based authentication
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Ensure authentication is required
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # Ensure authentication is required
     ],
 }
 
