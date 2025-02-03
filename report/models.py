@@ -27,8 +27,8 @@ class Report(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
     admin_feedback = models.TextField(blank=True, null=True)  # Admin response
 
-    class Meta:
-        unique_together = ("reporter", "post")  # Prevent duplicate reports by the same user
+    # class Meta:
+    #     unique_together = ("reporter", "post")
 
     def __str__(self):
         return f"{self.reporter.username} reported {self.post} for {self.get_reason_display()}"
