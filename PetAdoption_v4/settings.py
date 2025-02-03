@@ -47,7 +47,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
     "http://localhost:5500",
     'https://mrtuzzo.github.io',
-    'https://pawgle.netlify.app/',
 ]
 
 INSTALLED_APPS = [
@@ -104,9 +103,15 @@ REST_AUTH_SERIALIZERS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        # 'dj_rest_auth.authentication.AllAuthJWTAuthentication',  # If using dj-rest-auth with JWT
+        'rest_framework.authentication.SessionAuthentication',  # For browsable API login
+        'rest_framework.authentication.TokenAuthentication',  # If using token-based authentication
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Ensure authentication is required
     ],
 }
+
 
 TEMPLATES = [
     {
