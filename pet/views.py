@@ -48,16 +48,35 @@ class PetViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(pets, many=True)
         return Response(serializer.data)
 
+    # @action(detail=False, methods=['get'])
+    # def pets_only(self, request):
+    #     pets = Pet.objects.all()
+    #     pets_without_exact_type = [pet for pet in pets if pet.get_pet_type() == "pets"]
+    #
+    #     page = self.paginate_queryset(pets_without_exact_type)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = self.get_serializer(pets_without_exact_type, many=True)
+    #     return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def pets_only(self, request):
-        pets = Pet.objects.all()
-        pets_without_exact_type = [pet for pet in pets if pet.get_pet_type() == "pets"]
+        gender = request.query_params.get('gender', None)  # Get gender from query params
 
-        page = self.paginate_queryset(pets_without_exact_type)
+        # Get only base Pet instances (not Cat or Dog)
+        pets = Pet.objects.filter(cat__isnull=True, dog__isnull=True)
+
+        # Apply gender filtering if provided
+        if gender:
+            pets = pets.filter(gender__iexact=gender)  # Case-insensitive filter
+
+        # Apply pagination
+        page = self.paginate_queryset(pets)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(pets_without_exact_type, many=True)
+        serializer = self.get_serializer(pets, many=True)
         return Response(serializer.data)
-
