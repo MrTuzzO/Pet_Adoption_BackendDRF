@@ -29,7 +29,7 @@ class DogFilter(django_filters.FilterSet):
 
 
 class DogViewSet(viewsets.ModelViewSet):
-    queryset = Dog.objects.all()
+    queryset = Dog.objects.all().order_by('-date_added')
     serializer_class = DogSerializer
     pagination_class = PetPagination  # If you have pagination setup
     filter_backends = [DjangoFilterBackend]

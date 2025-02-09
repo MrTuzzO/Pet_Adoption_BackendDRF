@@ -74,7 +74,7 @@ class UpdateAdoptionRequestView(APIView):
 
 
 class UserSentAdoptionRequestList(generics.ListAPIView):
-    queryset = AdoptionRequest.objects.all()
+    queryset = AdoptionRequest.objects.all().order_by('-date_requested')
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [IsAuthenticated]
 

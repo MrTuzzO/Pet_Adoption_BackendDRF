@@ -31,7 +31,7 @@ class CatFilter(django_filters.FilterSet):
 
 
 class CatViewSet(viewsets.ModelViewSet):
-    queryset = Cat.objects.all()
+    queryset = Cat.objects.all().order_by('-date_added')
     serializer_class = CatSerializer
     pagination_class = PetPagination
     filter_backends = [DjangoFilterBackend]

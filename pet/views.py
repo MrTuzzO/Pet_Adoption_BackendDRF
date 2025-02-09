@@ -23,11 +23,11 @@ class PetFilter(django_filters.FilterSet):
 
 
 class PetViewSet(viewsets.ModelViewSet):
-    queryset = Pet.objects.all()
+    queryset = Pet.objects.all().order_by('-date_added')
     serializer_class = PetSerializer
     pagination_class = PetPagination
-    filter_backends = [DjangoFilterBackend]  # Enable filtering
-    filterset_class = PetFilter  # Use the filter class
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PetFilter
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
