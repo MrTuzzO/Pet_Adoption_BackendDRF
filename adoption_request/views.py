@@ -96,26 +96,6 @@ class UpdateAdoptionRequestView(APIView):
                 adoption_request.pet.adoption_status = True
                 adoption_request.pet.save()
 
-                # Send email notification for rejection
-                email_subject = "Adoption Request Rejected"
-                email_body = f"""
-                                Dear {adoption_request.requester.username},
-
-                                We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
-                                Thank you for your understanding.
-
-                                Best regards,  
-                                PAWGLE
-                                """
-
-                send_mail(
-                    email_subject,
-                    email_body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [adoption_request.requester.email],
-                    fail_silently=False,
-                )
-
                 return Response({"message": "Adoption request approved successfully."}, status=status.HTTP_200_OK)
 
             elif action == 'reject':
