@@ -72,14 +72,14 @@ class UpdateAdoptionRequestView(APIView):
                 # Send email notification for approval
                 email_subject = "✅ Adoption Request Approved"
                 email_body = f"""
-                                Dear {adoption_request.requester.username},
+                        Dear {adoption_request.requester.username},
 
-                                Your adoption request for the pet "{adoption_request.pet.name}" has been approved!  
-                                Please contact the pet's owner for further details.
+                        Your adoption request for the pet "{adoption_request.pet.name}" has been approved!  
+                        Please contact the pet's owner for further details.
 
-                                Best regards,  
-                                PAWGLE Visit: "https://pawgle.netlify.app"
-                                """
+                        Best regards,  
+                        PAWGLE Visit: "https://pawgle.netlify.app"
+                        """
 
                 send_mail(
                     email_subject,
@@ -109,14 +109,14 @@ class UpdateAdoptionRequestView(APIView):
                 # Send email notification for rejection
                 email_subject = "Adoption Request Rejected"
                 email_body = f"""
-                                Dear {adoption_request.requester.username},
+                        Dear {adoption_request.requester.username},
 
-                                We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
-                                Thank you for your understanding.
+                        We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
+                        Thank you for your understanding.
 
-                                Best regards,  
-                                PAWGLE
-                                """
+                        Best regards,  
+                        PAWGLE "https://pawgle.netlify.app"
+                        """
 
                 send_mail(
                     email_subject,
