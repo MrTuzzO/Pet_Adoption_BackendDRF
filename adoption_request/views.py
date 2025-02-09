@@ -6,6 +6,8 @@ from .serializers import AdoptionRequestSerializer, AdoptionRequestListSerialize
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ValidationError
 from accounts.permission import IsAuthorOrReadOnly
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 class CreateAdoptionRequestView(generics.CreateAPIView):
@@ -22,6 +24,26 @@ class CreateAdoptionRequestView(generics.CreateAPIView):
         if pet.author == self.request.user:
             raise ValidationError("You cannot submit an adoption request for yourself.")
         serializer.save(pet=pet, requester=self.request.user)
+
+        # Send email notification
+        email_subject = "🚨 New Adoption Request Submitted"
+        email_body = f"""
+                Dear {pet.author.username},
+
+                A new adoption request has been submitted for your pet "{pet.name}".
+                Please log in to your account to approve or reject this request.
+
+                Best regards,  
+                Pawgle
+                """
+
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [pet.author.email],
+            fail_silently=False,
+        )
 
 
 class UpdateAdoptionRequestView(APIView):
@@ -47,12 +69,52 @@ class UpdateAdoptionRequestView(APIView):
                 adoption_request.status = 'Approved'
                 adoption_request.save()
 
+                # Send email notification for approval
+                email_subject = "✅ Adoption Request Approved"
+                email_body = f"""
+                                Dear {adoption_request.requester.username},
+
+                                Your adoption request for the pet "{adoption_request.pet.name}" has been approved!  
+                                Please contact the pet's owner for further details.
+
+                                Best regards,  
+                                PAWGLE
+                                """
+
+                send_mail(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [adoption_request.requester.email],
+                    fail_silently=False,
+                )
+
                 # Reject all other requests for the same pet
                 AdoptionRequest.objects.filter(pet=adoption_request.pet).exclude(id=adoption_request.id).update(status='Rejected')
 
                 # Update pet's adoption status
                 adoption_request.pet.adoption_status = True
                 adoption_request.pet.save()
+
+                # Send email notification for rejection
+                email_subject = "Adoption Request Rejected"
+                email_body = f"""
+                                Dear {adoption_request.requester.username},
+
+                                We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
+                                Thank you for your understanding.
+
+                                Best regards,  
+                                PAWGLE
+                                """
+
+                send_mail(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [adoption_request.requester.email],
+                    fail_silently=False,
+                )
 
                 return Response({"message": "Adoption request approved successfully."}, status=status.HTTP_200_OK)
 
@@ -63,6 +125,26 @@ class UpdateAdoptionRequestView(APIView):
                 # Reject the adoption request
                 adoption_request.status = 'Rejected'
                 adoption_request.save()
+
+                # Send email notification for rejection
+                email_subject = "Adoption Request Rejected"
+                email_body = f"""
+                                Dear {adoption_request.requester.username},
+
+                                We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
+                                Thank you for your understanding.
+
+                                Best regards,  
+                                PAWGLE
+                                """
+
+                send_mail(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [adoption_request.requester.email],
+                    fail_silently=False,
+                )
 
                 return Response({"message": "Adoption request rejected successfully."}, status=status.HTTP_200_OK)
 
