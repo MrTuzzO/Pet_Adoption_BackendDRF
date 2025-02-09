@@ -34,7 +34,7 @@ class CreateAdoptionRequestView(generics.CreateAPIView):
                 Please log in to your account to approve or reject this request.
 
                 Best regards,  
-                Pawgle
+                Pawgle, Visit: "https://pawgle.netlify.app"
                 """
 
         send_mail(
@@ -78,7 +78,7 @@ class UpdateAdoptionRequestView(APIView):
                                 Please contact the pet's owner for further details.
 
                                 Best regards,  
-                                PAWGLE
+                                PAWGLE Visit: "https://pawgle.netlify.app"
                                 """
 
                 send_mail(
