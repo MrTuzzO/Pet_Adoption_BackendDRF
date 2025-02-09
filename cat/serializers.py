@@ -11,6 +11,7 @@ class ColorSerializer(serializers.ModelSerializer):
 class CatSerializer(serializers.ModelSerializer):
     color_names = serializers.SerializerMethodField()
     author_username = serializers.CharField(source='author.username', read_only=True)
+    author_user_img = serializers.CharField(source='author.user_img', read_only=True)
     pet_type = serializers.SerializerMethodField()
 
     class Meta:
