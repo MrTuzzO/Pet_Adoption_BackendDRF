@@ -2,7 +2,7 @@ import django_filters
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from accounts.permission import IsAuthorOrReadOnly
+from accounts.permission import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Dog
 from .serializers import DogSerializer
@@ -34,7 +34,7 @@ class DogViewSet(viewsets.ModelViewSet):
     pagination_class = PetPagination  # If you have pagination setup
     filter_backends = [DjangoFilterBackend]
     filterset_class = DogFilter  # Use your custom filter class
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]  # Adjust permissions as needed
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly | IsAdminOrReadOnly]  # Adjust permissions as needed
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

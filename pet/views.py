@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from accounts.permission import IsAuthorOrReadOnly
+from accounts.permission import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from pet.models import Pet
 from .serializers import PetSerializer
 from rest_framework.decorators import action
@@ -28,7 +28,7 @@ class PetViewSet(viewsets.ModelViewSet):
     pagination_class = PetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = PetFilter
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly | IsAdminOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

@@ -2,7 +2,7 @@ import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
-from accounts.permission import IsAuthorOrReadOnly
+from accounts.permission import IsAuthorOrReadOnly,  IsAdminOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from pet.views import PetPagination
 from .models import Cat, CatColor
@@ -36,7 +36,7 @@ class CatViewSet(viewsets.ModelViewSet):
     pagination_class = PetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = CatFilter
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly | IsAdminOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
