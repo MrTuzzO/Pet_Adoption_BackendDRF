@@ -2,13 +2,34 @@ from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from .models import Report
 from .serializers import ReportSerializer
+from rest_framework.pagination import PageNumberPagination
+import django_filters
+
+
+class ReportPagination(PageNumberPagination):
+    page_size = 10
+
+
+class ReportFilter(django_filters.FilterSet):
+    status = django_filters.ChoiceFilter(choices=Report.STATUS_CHOICES)
+    reason = django_filters.ChoiceFilter(choices=Report.REASON_CHOICES)
+
+    class Meta:
+        model = Report
+        fields = ["status", "reason"]
 
 
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all().order_by('-created_at')
     serializer_class = ReportSerializer
+    pagination_class = ReportPagination
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_class = ReportFilter
+    search_fields = ["reporter__username", "post__name", "id"]
 
     def get_permissions(self):
         if self.action == "create":
@@ -17,6 +38,8 @@ class ReportViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]  # Allow all users to access (but restrict data)
         elif self.action in ["retrieve", "update"]:
             return [permissions.IsAdminUser()]  # Only admins can retrieve/update
+        elif self.action == "destroy":
+            return [permissions.IsAdminUser()]  # Only admins can delete
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
@@ -59,39 +82,7 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        old_status = instance.status
         response = super().update(request, *args, **kwargs)
         instance.refresh_from_db()  # Refresh instance after update
 
-        if instance.status != old_status:
-            admin_feedback = instance.admin_feedback if instance.admin_feedback else "No additional feedback provided."
-
-            email_subject = "📢 Report Status Update - Pet Adoption Platform"
-            email_body = f"""
-            Dear {instance.reporter.username},
-
-            We hope you are doing well.
-
-            Your report regarding the post **"{instance.post}"** has been **updated**. Below are the details:
-
-            🔹 Report Status: {instance.status}  
-            🔹 Reason for Report: {instance.get_reason_display()}  
-            🔹 Admin Feedback: {admin_feedback}  
-
-            We appreciate your efforts in maintaining a safe and trustworthy platform.  
-            If you have any further concerns, please feel free to reach out.
-
-            Best regards,  
-            **Support Team**  
-            Pet Adoption Platform  
-            {settings.DEFAULT_FROM_EMAIL}
-            """
-
-            send_mail(
-                email_subject,
-                email_body,
-                settings.DEFAULT_FROM_EMAIL,
-                [instance.reporter.email],
-                fail_silently=False,
-            )
         return response

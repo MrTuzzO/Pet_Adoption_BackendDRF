@@ -15,7 +15,7 @@ class Report(models.Model):
     ]
 
     STATUS_CHOICES = [
-        ("Pending", "Pending Review"),
+        ("Pending", "Pending"),
         ("Reviewed", "Reviewed"),
         ("Rejected", "Rejected"),
     ]
