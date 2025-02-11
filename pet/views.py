@@ -8,6 +8,7 @@ from accounts.permission import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from pet.models import Pet
 from .serializers import PetSerializer
 from rest_framework.decorators import action
+from rest_framework import filters
 
 
 class PetPagination(PageNumberPagination):
@@ -16,19 +17,24 @@ class PetPagination(PageNumberPagination):
 
 class PetFilter(django_filters.FilterSet):
     gender = django_filters.CharFilter(field_name='gender', lookup_expr='iexact')
+    name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')  # Case-insensitive search
+    location = django_filters.CharFilter(field_name='location', lookup_expr='icontains')  # Case-insensitive search
+    author_username = django_filters.CharFilter(field_name='author__username', lookup_expr='icontains')  # Filter by author's username
+    author_email = django_filters.CharFilter(field_name='author__email', lookup_expr='icontains')  # Filter by author's email
 
     class Meta:
         model = Pet
-        fields = ['gender']
+        fields = ['gender', 'name', 'location', 'author_username', 'author_email']
 
 
 class PetViewSet(viewsets.ModelViewSet):
     queryset = Pet.objects.all().order_by('-date_added')
     serializer_class = PetSerializer
     pagination_class = PetPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = PetFilter
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly | IsAdminOrReadOnly]
+    search_fields = ['id', 'name', 'location', 'description', 'gender', 'author__username', 'author__email']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
