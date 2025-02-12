@@ -5,9 +5,13 @@ from .models import Pet, AdoptionRequest
 from .serializers import AdoptionRequestSerializer, AdoptionRequestListSerializer
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ValidationError
-from accounts.permission import IsAuthorOrReadOnly
 from django.conf import settings
 from django.core.mail import send_mail
+from rest_framework.pagination import PageNumberPagination
+
+
+class AdoptionRequestPagination(PageNumberPagination):
+    page_size = 1
 
 
 class CreateAdoptionRequestView(generics.CreateAPIView):
@@ -139,6 +143,7 @@ class UserSentAdoptionRequestList(generics.ListAPIView):
     queryset = AdoptionRequest.objects.all().order_by('-date_requested')
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [IsAuthenticated]
+    # pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.filter(requester=self.request.user)
@@ -148,6 +153,7 @@ class UserReceivedAdoptionRequestList(generics.ListAPIView):
     queryset = AdoptionRequest.objects.all()
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [IsAuthenticated]
+    # pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.filter(pet__author=self.request.user)
@@ -156,6 +162,7 @@ class UserReceivedAdoptionRequestList(generics.ListAPIView):
 class AdoptionRequestListView(generics.ListAPIView):
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [permissions.IsAuthenticated]
+    # pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.all()
