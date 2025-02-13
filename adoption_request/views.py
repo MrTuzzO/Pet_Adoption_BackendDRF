@@ -11,7 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class AdoptionRequestPagination(PageNumberPagination):
-    page_size = 1
+    page_size = 5
 
 
 class CreateAdoptionRequestView(generics.CreateAPIView):
@@ -110,26 +110,6 @@ class UpdateAdoptionRequestView(APIView):
                 adoption_request.status = 'Rejected'
                 adoption_request.save()
 
-                # Send email notification for rejection
-                email_subject = "Adoption Request Rejected"
-                email_body = f"""
-                        Dear {adoption_request.requester.username},
-
-                        We regret to inform you that your adoption request for the pet "{adoption_request.pet.name}" has been rejected.  
-                        Thank you for your understanding.
-
-                        Best regards,  
-                        PAWGLE "https://pawgle.netlify.app"
-                        """
-
-                send_mail(
-                    email_subject,
-                    email_body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [adoption_request.requester.email],
-                    fail_silently=False,
-                )
-
                 return Response({"message": "Adoption request rejected successfully."}, status=status.HTTP_200_OK)
 
             else:
@@ -143,7 +123,7 @@ class UserSentAdoptionRequestList(generics.ListAPIView):
     queryset = AdoptionRequest.objects.all().order_by('-date_requested')
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [IsAuthenticated]
-    # pagination_class = AdoptionRequestPagination
+    pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.filter(requester=self.request.user)
@@ -153,7 +133,7 @@ class UserReceivedAdoptionRequestList(generics.ListAPIView):
     queryset = AdoptionRequest.objects.all()
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [IsAuthenticated]
-    # pagination_class = AdoptionRequestPagination
+    pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.filter(pet__author=self.request.user)
@@ -162,7 +142,7 @@ class UserReceivedAdoptionRequestList(generics.ListAPIView):
 class AdoptionRequestListView(generics.ListAPIView):
     serializer_class = AdoptionRequestListSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # pagination_class = AdoptionRequestPagination
+    pagination_class = AdoptionRequestPagination
 
     def get_queryset(self):
         return AdoptionRequest.objects.all()
